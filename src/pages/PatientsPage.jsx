@@ -5,7 +5,7 @@ import Header from "../components/common/Header";
 import StatCard from "../components/common/StatCard";
 
 import { AlertTriangle, DollarSign, Package, TrendingUp, User, UserCheck, UserCircle, Users } from "lucide-react";
-import PatientTableOnly from "../components/products/patiantTble";
+import PatientTableOnly from "../components/Patiants/patiantTble";
 
 const PatientsPage = () => {
   const [patients, setPatients] = useState([]);
@@ -31,7 +31,7 @@ const PatientsPage = () => {
 
   return (
     <div className='flex-1 overflow-auto relative z-10'>
-      <Header title='Products' />
+      <Header title='Patians' />
 
       <main className='max-w-7xl mx-auto py-6 px-4 lg:px-8'>
         {/* STATS */}

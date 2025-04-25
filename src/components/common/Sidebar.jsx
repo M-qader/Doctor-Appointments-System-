@@ -7,16 +7,16 @@ const SIDEBAR_ITEMS = [
 	{
 		name: "Overview",
 		icon: BarChart2,
-		// color: "#6366f1",
+		color: "#6366f1",
 		href: "/",
 	},
-	{ name: "Users", icon: Users, href: "/users" },
-	{ name: "Patients", icon: UserPlus, href: "/products" },
-	{ name: "Doctor", icon: Stethoscope, href: "/sales" },
-	{ name: "Appointment", icon: Calendar, href: "/orders" },
-	{ name: "Clinic / Hospital", icon: Hospital, href: "/analytics" },
-	{ name: "Payment ", icon: CreditCard, href: "/analytics" },
-	{ name: "Settings", icon: Settings, href: "/settings" },
+	{ name: "Users", icon: Users, class:"text-#EC4899", href: "/users" },
+	{ name: "Patients", icon: UserPlus, class:"text-#8B5CF6", href: "/products" },
+	{ name: "Doctor", icon: Stethoscope, color: "#10B981", href: "/sales" },
+	{ name: "Appointment", icon: Calendar, color: "#F59E0B", href: "/orders" },
+	{ name: "Clinic / Hospital", icon: Hospital, color: "#3B82F6", href: "/analytics" },
+	{ name: "Payment ", icon: CreditCard, color: "#3B82F6", href: "/analytics" },
+	{ name: "Settings", icon: Settings, color: "#6EE7B7", href: "/settings" },
 ];
 
 const Sidebar = () => {
