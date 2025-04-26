@@ -1,10 +1,10 @@
+// patiantTble.jsx
 import Swal from 'sweetalert2';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Edit, Trash2, Search } from 'lucide-react';
 
-export default function PatientTable() {
-  const [patients, setPatients] = useState([]);
+export default function PatientTable({ patients, refreshPatients }) {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -17,21 +17,6 @@ export default function PatientTable() {
     gender: '',
     dob: '',
   });
-
-  const fetchPatients = async () => {
-    try {
-      const res = await fetch('http://localhost:8080/api/patients');
-      const json = await res.json();
-      const actualPatients = Array.isArray(json) ? json : json.data || [];
-      setPatients(actualPatients);
-    } catch (error) {
-      console.error('Failed to fetch patients:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchPatients();
-  }, []);
 
   const handleEdit = (patient) => {
     setEditMode(true);
@@ -54,7 +39,7 @@ export default function PatientTable() {
         method: 'DELETE',
       });
       if (res.ok) {
-        fetchPatients();
+        await refreshPatients();
       } else {
         console.error('Failed to delete patient');
       }
@@ -83,7 +68,7 @@ export default function PatientTable() {
         setEditMode(false);
         setIsModalOpen(false);
         setSelectedPatientId(null);
-        fetchPatients();
+        await refreshPatients();
 
         Swal.fire({
           icon: 'success',

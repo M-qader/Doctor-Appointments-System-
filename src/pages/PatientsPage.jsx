@@ -1,17 +1,15 @@
-import { useEffect, useState } from "react";
+// PatientsPage.jsx
+import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-
 import Header from "../components/common/Header";
 import StatCard from "../components/common/StatCard";
-
-import { AlertTriangle, DollarSign, Package, TrendingUp, User, UserCheck, UserCircle, Users }
- from "lucide-react";
-import PatientTableOnly from "../components/Patiants/patiantTble";
+import { User, UserCheck, Users } from "lucide-react";
+import PatientTable from "../components/Patiants/patiantTble"; // renamed to match the component
 
 const PatientsPage = () => {
   const [patients, setPatients] = useState([]);
 
-  const fetchPatients = async () => {
+  const fetchPatients = useCallback(async () => {
     try {
       const res = await fetch("http://localhost:8080/api/patients");
       const json = await res.json();
@@ -20,11 +18,11 @@ const PatientsPage = () => {
     } catch (error) {
       console.error("Failed to fetch patients:", error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchPatients();
-  }, []);
+  }, [fetchPatients]);
 
   const totalPatients = patients.length;
   const totalMens = patients.filter((p) => p.gender === "Male").length;
@@ -32,7 +30,7 @@ const PatientsPage = () => {
 
   return (
     <div className='flex-1 overflow-auto relative z-10'>
-      <Header title='Patians' />
+      <Header title='Patients' />
 
       <main className='max-w-7xl mx-auto py-6 px-4 lg:px-8'>
         {/* STATS */}
@@ -47,7 +45,7 @@ const PatientsPage = () => {
           <StatCard name='Total Women' icon={UserCheck} value={totalWomens} color='#F59E0B' />
         </motion.div>
 
-        <PatientTableOnly />
+        <PatientTable refreshPatients={fetchPatients} patients={patients} />
       </main>
     </div>
   );
