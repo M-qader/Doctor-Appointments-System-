@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import Header from "../components/common/Header";
 import StatCard from "../components/common/StatCard";
 
-import { AlertTriangle, DollarSign, Package, TrendingUp, User, UserCheck, UserCircle, Users } from "lucide-react";
+import { AlertTriangle, DollarSign, Package, TrendingUp, User, UserCheck, UserCircle, Users }
+ from "lucide-react";
 import PatientTableOnly from "../components/Patiants/patiantTble";
 
 const PatientsPage = () => {

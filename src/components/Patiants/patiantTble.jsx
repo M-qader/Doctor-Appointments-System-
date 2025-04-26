@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Edit, Trash2, Search } from 'lucide-react';
@@ -83,11 +84,28 @@ export default function PatientTable() {
         setIsModalOpen(false);
         setSelectedPatientId(null);
         fetchPatients();
+
+        Swal.fire({
+          icon: 'success',
+          title: editMode ? 'Patient Updated' : 'New Patient Added',
+          showConfirmButton: false,
+          timer: 1500,
+        });
       } else {
         console.error('Failed to save patient');
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Failed to save patient!',
+        });
       }
     } catch (error) {
       console.error('Error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Something went wrong!',
+      });
     }
   };
 
@@ -103,25 +121,24 @@ export default function PatientTable() {
 
   return (
     <motion.div
-      className="p-6 space-y-6 min-h-screen"
-      style={{ backgroundColor: '#192231' }}
+      className="p-6 space-y-6 min-h-screen bg-white"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
     >
-      <div className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700">
+      <div className="bg-gray-100 shadow-2xl rounded-xl p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-white">Patients Table</h2>
+          <h2 className="text-xl font-bold text-black">Patients Table</h2>
           <div className="flex items-center space-x-4">
             <div className="relative">
               <input
                 type="text"
                 placeholder="Search patients..."
-                className="bg-gray-900 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-white text-black placeholder-black border border-black rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+              <Search className="absolute left-3 top-2.5 text-black" size={18} />
             </div>
             <button
               onClick={() => {
@@ -129,7 +146,7 @@ export default function PatientTable() {
                 setNewPatient({ fullName: '', email: '', phone: '', gender: '', dob: '' });
                 setIsModalOpen(true);
               }}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500"
+              className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
             >
               Add Patient
             </button>
@@ -137,39 +154,40 @@ export default function PatientTable() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-700">
-            <thead>
+          <table className="min-w-full divide-y divide-gray-400 border border-gray-300">
+            <thead className="bg-gray-300">
               <tr>
                 {['ID', 'Full Name', 'Email', 'Phone', 'Gender', 'DOB', 'Created At', 'Actions'].map((head) => (
                   <th
                     key={head}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-sm font-medium text-black uppercase tracking-wider"
                   >
                     {head}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-700">
+            <tbody className="divide-y divide-gray-300">
               {filteredPatients.map((p) => (
                 <motion.tr
                   key={p.patientId}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}
+                  className="bg-gray-50"
                 >
-                  <td className="px-6 py-4 text-sm text-gray-300">{p.patientId}</td>
-                  <td className="px-6 py-4 text-sm text-gray-300">{p.fullName}</td>
-                  <td className="px-6 py-4 text-sm text-gray-300">{p.email}</td>
-                  <td className="px-6 py-4 text-sm text-gray-300">{p.phone}</td>
-                  <td className="px-6 py-4 text-sm text-gray-300">{p.gender}</td>
-                  <td className="px-6 py-4 text-sm text-gray-300">{p.dob}</td>
-                  <td className="px-6 py-4 text-sm text-gray-300">{p.createdAt}</td>
-                  <td className="px-6 py-4 text-sm text-gray-300">
-                    <button onClick={() => handleEdit(p)} className="text-indigo-400 hover:text-indigo-300 mr-2">
+                  <td className="px-6 py-4 text-sm text-black">{p.patientId}</td>
+                  <td className="px-6 py-4 text-sm text-black">{p.fullName}</td>
+                  <td className="px-6 py-4 text-sm text-black">{p.email}</td>
+                  <td className="px-6 py-4 text-sm text-black">{p.phone}</td>
+                  <td className="px-6 py-4 text-sm text-black">{p.gender}</td>
+                  <td className="px-6 py-4 text-sm text-black">{p.dob}</td>
+                  <td className="px-6 py-4 text-sm text-black">{p.createdAt}</td>
+                  <td className="px-6 py-4 text-sm text-black">
+                    <button onClick={() => handleEdit(p)} className="text-blue-600 hover:text-blue-800 mr-2">
                       <Edit size={18} />
                     </button>
-                    <button onClick={() => handleDelete(p.patientId)} className="text-red-400 hover:text-red-300">
+                    <button onClick={() => handleDelete(p.patientId)} className="text-red-600 hover:text-red-800">
                       <Trash2 size={18} />
                     </button>
                   </td>
@@ -182,23 +200,58 @@ export default function PatientTable() {
 
       {/* Modal Form */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-xl w-[500px] max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl text-white mb-4">
-              {editMode ? 'Edit Patient' : 'Add New Patient'}
-            </h2>
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-[500px] max-h-[90vh] overflow-y-auto text-black">
+            <h2 className="text-xl mb-4">{editMode ? 'Edit Patient' : 'Add New Patient'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {['fullName', 'email', 'phone', 'gender', 'dob'].map((field) => (
+              <div>
+                <label className="block mb-1 font-semibold">Full Name</label>
                 <input
-                  key={field}
-                  type={field === 'dob' ? 'date' : 'text'}
-                  placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                  value={newPatient[field]}
-                  onChange={(e) => setNewPatient({ ...newPatient, [field]: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-700 text-white rounded focus:outline-none"
+                  type="text"
+                  value={newPatient.fullName}
+                  onChange={(e) => setNewPatient({ ...newPatient, fullName: e.target.value })}
+                  className="w-full px-4 py-2 border border-black rounded"
                 />
-              ))}
-
+              </div>
+              <div>
+                <label className="block mb-1 font-semibold">Email</label>
+                <input
+                  type="email"
+                  value={newPatient.email}
+                  onChange={(e) => setNewPatient({ ...newPatient, email: e.target.value })}
+                  className="w-full px-4 py-2 border border-black rounded"
+                />
+              </div>
+              <div>
+                <label className="block mb-1 font-semibold">Phone</label>
+                <input
+                  type="text"
+                  value={newPatient.phone}
+                  onChange={(e) => setNewPatient({ ...newPatient, phone: e.target.value })}
+                  className="w-full px-4 py-2 border border-black rounded"
+                />
+              </div>
+              <div>
+                <label className="block mb-1 font-semibold">Gender</label>
+                <select
+                  value={newPatient.gender}
+                  onChange={(e) => setNewPatient({ ...newPatient, gender: e.target.value })}
+                  className="w-full px-4 py-2 border border-black rounded"
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+              <div>
+                <label className="block mb-1 font-semibold">Date of Birth</label>
+                <input
+                  type="date"
+                  value={newPatient.dob}
+                  onChange={(e) => setNewPatient({ ...newPatient, dob: e.target.value })}
+                  className="w-full px-4 py-2 border border-black rounded"
+                />
+              </div>
               <div className="flex justify-end space-x-3 pt-2">
                 <button
                   type="button"
@@ -207,13 +260,13 @@ export default function PatientTable() {
                     setEditMode(false);
                     setSelectedPatientId(null);
                   }}
-                  className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-500"
+                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500"
+                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
                 >
                   {editMode ? 'Update' : 'Save'}
                 </button>
