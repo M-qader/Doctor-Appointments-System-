@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Edit, Trash2, Search } from 'lucide-react';
 import Swal from 'sweetalert2';
@@ -13,15 +13,31 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
     email: '',
     phone: '',
     specialization: '',
-    timeslot: '',
+    startTime: '',
+    endTime: '',
     experienceYears: '',
     gender: '',
     status: true,
     hospitalId: '',
     image: null,
   });
+  const [hospitals, setHospitals] = useState([]);
+
+  useEffect(() => {
+    const fetchHospitals = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/hospitals');
+        const data = await response.json();
+        setHospitals(data);
+      } catch (error) {
+        console.error('Error fetching hospitals:', error);
+      }
+    };
+    fetchHospitals();
+  }, []);
 
   const handleEdit = (doctor) => {
+    const [startTime, endTime] = doctor.timeslot ? doctor.timeslot.split(' - ') : ['', ''];
     setEditMode(true);
     setSelectedDoctorId(doctor.doctorId);
     setNewDoctor({
@@ -29,11 +45,12 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
       email: doctor.email,
       phone: doctor.phone,
       specialization: doctor.specialization,
-      timeslot: doctor.timeslot,
+      startTime,
+      endTime,
       experienceYears: doctor.experienceYears,
       gender: doctor.gender,
       status: doctor.status,
-      hospitalId: doctor.hospital?.hospitalId || '',
+      hospitalId: doctor.hospital?.clinic_id || '',
       image: null,
     });
     setIsModalOpen(true);
@@ -58,31 +75,32 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const timeslot = `${newDoctor.startTime} - ${newDoctor.endTime}`;
+
     const formData = new FormData();
     formData.append('fullName', newDoctor.fullName);
     formData.append('email', newDoctor.email);
     formData.append('phone', newDoctor.phone);
     formData.append('specialization', newDoctor.specialization);
-    formData.append('timeslot', newDoctor.timeslot);
+    formData.append('timeslot', timeslot);
     formData.append('experienceYears', newDoctor.experienceYears);
     formData.append('gender', newDoctor.gender);
-    formData.append('status', newDoctor.status);
     formData.append('hospital_id', newDoctor.hospitalId);
-    if (newDoctor.image) formData.append('image', newDoctor.image);
+    formData.append('status', newDoctor.status ? 'true' : 'false');
+    if (newDoctor.image) {
+      formData.append('file', newDoctor.image);
+    }
 
     const url = editMode
       ? `http://localhost:8080/api/doctors/${selectedDoctorId}`
       : `http://localhost:8080/api/doctors`;
-
     const method = editMode ? 'PUT' : 'POST';
 
     try {
       const res = await fetch(url, {
         method,
-        body: method === 'PUT' ? JSON.stringify(newDoctor) : formData,
-        headers: method === 'PUT' ? { 'Content-Type': 'application/json' } : undefined,
+        body: formData,
       });
-
       if (res.ok) {
         Swal.fire({
           icon: 'success',
@@ -118,6 +136,7 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
     >
+      {/* Top Bar */}
       <div className="bg-gray-100 shadow-2xl rounded-xl p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-black">Doctors Table</h2>
@@ -137,7 +156,7 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
                 setEditMode(false);
                 setNewDoctor({
                   fullName: '', email: '', phone: '', specialization: '',
-                  timeslot: '', experienceYears: '', gender: '', status: true, hospitalId: '', image: null,
+                  startTime: '', endTime: '', experienceYears: '', gender: '', status: true, hospitalId: '', image: null,
                 });
                 setIsModalOpen(true);
               }}
@@ -148,6 +167,7 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
           </div>
         </div>
 
+        {/* Table */}
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-400 border border-gray-300">
             <thead className="bg-gray-300">
@@ -164,7 +184,7 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
                 <motion.tr key={d.doctorId} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
                   <td className="px-6 py-4 text-sm text-black">
                     <img
-                      src={d.profileImageUrl ? `http://localhost:8080${d.profileImageUrl}` : 'https://via.placeholder.com/48?text=No+Image'}
+                      src={d.profileImageUrl ? `http://localhost:8080/files/${d.profileImageUrl}` : 'https://via.placeholder.com/48?text=No+Image'}
                       alt="profile"
                       className="w-12 h-12 rounded-full object-cover transition-transform duration-300 hover:scale-110"
                     />
@@ -172,7 +192,12 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
                   <td className="px-6 py-4 text-sm text-black">{d.fullName}</td>
                   <td className="px-6 py-4 text-sm text-black">{d.specialization}</td>
                   <td className="px-6 py-4 text-sm text-black">{d.timeslot}</td>
-                  <td className="px-6 py-4 text-sm text-black">{d.status ? 'Active' : 'Inactive'}</td>
+                  <td className="px-6 py-4 text-sm">
+                    <span className={d.status ? "text-green-600 font-semibold" : 
+                      "text-red-600 font-semibold"}>{d.status ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  
                   <td className="px-6 py-4 text-sm text-black">{d.createdAt}</td>
                   <td className="px-6 py-4 text-sm text-black">
                     <button onClick={() => handleEdit(d)} className="text-blue-600 hover:text-blue-800 mr-2">
@@ -189,21 +214,18 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
         </div>
       </div>
 
-      {/* Modal Form */}
+      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-xl w-[500px] max-h-[90vh] overflow-y-auto text-black">
             <h2 className="text-xl mb-4">{editMode ? 'Edit Doctor' : 'Add New Doctor'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {[ 
+              {/* Form Fields */}
+              {[
                 { label: 'Full Name', name: 'fullName', type: 'text' },
                 { label: 'Email', name: 'email', type: 'email' },
                 { label: 'Phone', name: 'phone', type: 'text' },
                 { label: 'Specialization', name: 'specialization', type: 'text' },
-                { label: 'Timeslot', name: 'timeslot', type: 'text' },
-                { label: 'Experience Years', name: 'experienceYears', type: 'number' },
-                { label: 'Gender', name: 'gender', type: 'text' },
-                { label: 'Hospital ID', name: 'hospitalId', type: 'number' },
               ].map(({ label, name, type }) => (
                 <div key={name}>
                   <label className="block mb-1 font-semibold">{label}</label>
@@ -215,10 +237,69 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
                   />
                 </div>
               ))}
+
+              {/* Start & End Time */}
+              <div>
+                <label className="block mb-1 font-semibold">Start Time</label>
+                <input
+                  type="time"
+                  value={newDoctor.startTime}
+                  onChange={(e) => setNewDoctor({ ...newDoctor, startTime: e.target.value })}
+                  className="w-full px-4 py-2 border border-black rounded"
+                />
+              </div>
+              <div>
+                <label className="block mb-1 font-semibold">End Time</label>
+                <input
+                  type="time"
+                  value={newDoctor.endTime}
+                  onChange={(e) => setNewDoctor({ ...newDoctor, endTime: e.target.value })}
+                  className="w-full px-4 py-2 border border-black rounded"
+                />
+              </div>
+
+              {/* More Fields */}
+              <div>
+                <label className="block mb-1 font-semibold">Experience Years</label>
+                <input
+                  type="number"
+                  value={newDoctor.experienceYears}
+                  onChange={(e) => setNewDoctor({ ...newDoctor, experienceYears: e.target.value })}
+                  className="w-full px-4 py-2 border border-black rounded"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-1 font-semibold">Gender</label>
+                <select
+                  value={newDoctor.gender}
+                  onChange={(e) => setNewDoctor({ ...newDoctor, gender: e.target.value })}
+                  className="w-full px-4 py-2 border border-black rounded"
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block mb-1 font-semibold">Hospital</label>
+                <select
+                  value={newDoctor.hospitalId}
+                  onChange={(e) => setNewDoctor({ ...newDoctor, hospitalId: e.target.value })}
+                  className="w-full px-4 py-2 border border-black rounded"
+                >
+                  <option value="">Select Hospital</option>
+                  {hospitals.map((h) => (
+                    <option key={h.clinic_id} value={h.clinic_id}>{h.name}</option>
+                  ))}
+                </select>
+              </div>
+
               <div>
                 <label className="block mb-1 font-semibold">Status</label>
                 <select
-                  value={newDoctor.status}
+                  value={newDoctor.status ? 'true' : 'false'}
                   onChange={(e) => setNewDoctor({ ...newDoctor, status: e.target.value === 'true' })}
                   className="w-full px-4 py-2 border border-black rounded"
                 >
@@ -226,6 +307,7 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
                   <option value="false">Inactive</option>
                 </select>
               </div>
+
               <div>
                 <label className="block mb-1 font-semibold">Profile Image</label>
                 <input
@@ -234,6 +316,8 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
                   className="w-full"
                 />
               </div>
+
+              {/* Buttons */}
               <div className="flex justify-end space-x-3 pt-2">
                 <button
                   type="button"

@@ -23,9 +23,9 @@ const DoctorsPage = () => {
     fetchDoctors();
   }, [fetchDoctors]);
 
-  const totalDoctors = doctors.length;
-  const totalActives = doctors.filter((d) => d.status === "Active").length;
-  const totalInactives = doctors.filter((d) => d.status === "Inactive").length;
+const totalDoctors = doctors.length;
+const totalActives = doctors.filter((d) => d.status === true).length;
+const totalInactives = doctors.filter((d) => d.status === false).length;
 
   return (
     <div className='flex-1 overflow-auto relative z-10'>
