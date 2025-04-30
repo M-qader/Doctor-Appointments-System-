@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import Sidebar from "./components/common/Sidebar";
 
 import OverviewPage from "./pages/OverviewPage";
+import AppointmentsPage from "./pages/AppointmentsPage";
 import PatientsPage from "./pages/PatientsPage";
 import HospitalsPage from "./pages/HospitalsPage";
 import DoctorsPage from "./pages/DoctorsPage"
@@ -28,6 +29,7 @@ function App() {
 				<Route path='/hospitals' element={<HospitalsPage />} />
 				<Route path='/Doctors' element={<DoctorsPage />} />
 				<Route path='/users' element={<UsersPage />} />
+				<Route path='/Appointment' element={<AppointmentsPage />} />
 				{/* <Route path='/sales' element={<SalesPage />} /> */}
 				<Route path='/analytics' element={<AnalyticsPage />} />
 				<Route path='/settings' element={<SettingsPage />} />

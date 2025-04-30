@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Edit, Trash2, Search } from 'lucide-react';
 import Swal from 'sweetalert2';
+import TimePicker from 'react-time-picker';
+import 'react-time-picker/dist/TimePicker.css';
+import 'react-clock/dist/Clock.css';
 
 export default function DoctorTable({ doctors, refreshDoctors }) {
   const [search, setSearch] = useState('');
@@ -172,7 +175,7 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
           <table className="min-w-full divide-y divide-gray-400 border border-gray-300">
             <thead className="bg-gray-300">
               <tr>
-                {['Image', 'Full Name', 'Specialization', 'Timeslot', 'Status', 'Created At', 'Actions'].map((head) => (
+                {['ID','Image', 'Full Name', 'Specialization', 'Timeslot', 'Status', 'Created At', 'Actions'].map((head) => (
                   <th key={head} className="px-6 py-3 text-left text-sm font-medium text-black uppercase tracking-wider">
                     {head}
                   </th>
@@ -182,6 +185,7 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
             <tbody className="divide-y divide-gray-300">
               {filteredDoctors.map((d) => (
                 <motion.tr key={d.doctorId} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+                  <td className="px-6 py-4 text-sm text-black">{d.doctorId}</td>
                   <td className="px-6 py-4 text-sm text-black">
                     <img
                       src={d.profileImageUrl ? `http://localhost:8080/files/${d.profileImageUrl}` : 'https://via.placeholder.com/48?text=No+Image'}
@@ -217,58 +221,92 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl w-[500px] max-h-[90vh] overflow-y-auto text-black">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-[600px] max-h-[100vh] overflow-y-auto text-black">
             <h2 className="text-xl mb-4">{editMode ? 'Edit Doctor' : 'Add New Doctor'}</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Form Fields */}
-              {[
-                { label: 'Full Name', name: 'fullName', type: 'text' },
-                { label: 'Email', name: 'email', type: 'email' },
-                { label: 'Phone', name: 'phone', type: 'text' },
-                { label: 'Specialization', name: 'specialization', type: 'text' },
-              ].map(({ label, name, type }) => (
-                <div key={name}>
-                  <label className="block mb-1 font-semibold">{label}</label>
-                  <input
-                    type={type}
-                    value={newDoctor[name]}
-                    onChange={(e) => setNewDoctor({ ...newDoctor, [name]: e.target.value })}
-                    className="w-full px-4 py-2 border border-black rounded"
-                  />
-                </div>
-              ))}
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Full Name */}
+              <div>
+                <label className="block mb-1 font-semibold">Full Name</label>
+                <input
+                  type="text"
+                  placeholder="Example Dr Ali Said Ali"
+                  value={newDoctor.fullName}
+                  onChange={(e) => setNewDoctor({ ...newDoctor, fullName: e.target.value })}
+                  className="w-full px-4 py-2 border border-black rounded"
+                />
+              </div>
 
-              {/* Start & End Time */}
+              {/* Email */}
+              <div>
+                <label className="block mb-1 font-semibold">Email</label>
+                <input
+                  type="email"
+                  placeholder="Ali@gmail.com"
+                  value={newDoctor.email}
+                  onChange={(e) => setNewDoctor({ ...newDoctor, email: e.target.value })}
+                  className="w-full px-4 py-2 border border-black rounded"
+                />
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label className="block mb-1 font-semibold">Phone</label>
+                <input
+                  type="text"
+                  placeholder="+252 617 554433"
+                  value={newDoctor.phone}
+                  onChange={(e) => setNewDoctor({ ...newDoctor, phone: e.target.value })}
+                  className="w-full px-4 py-2 border border-black rounded"
+                />
+              </div>
+
+              {/* Specialization */}
+              <div>
+                <label className="block mb-1 font-semibold">Specialization</label>
+                <input
+                  type="text"
+                  placeholder="Cudurada Guud"
+                  value={newDoctor.specialization}
+                  onChange={(e) => setNewDoctor({ ...newDoctor, specialization: e.target.value })}
+                  className="w-full px-4 py-2 border border-black rounded"
+                />
+              </div>
+
+              {/* Start Time */}
               <div>
                 <label className="block mb-1 font-semibold">Start Time</label>
-                <input
-                  type="time"
+                <TimePicker
+                  onChange={(value) => setNewDoctor({ ...newDoctor, startTime: value })}
                   value={newDoctor.startTime}
-                  onChange={(e) => setNewDoctor({ ...newDoctor, startTime: e.target.value })}
-                  className="w-full px-4 py-2 border border-black rounded"
-                />
-              </div>
-              <div>
-                <label className="block mb-1 font-semibold">End Time</label>
-                <input
-                  type="time"
-                  value={newDoctor.endTime}
-                  onChange={(e) => setNewDoctor({ ...newDoctor, endTime: e.target.value })}
+                  disableClock
                   className="w-full px-4 py-2 border border-black rounded"
                 />
               </div>
 
-              {/* More Fields */}
+              {/* End Time */}
+              <div>
+                <label className="block mb-1 font-semibold">End Time</label>
+                <TimePicker
+                  onChange={(value) => setNewDoctor({ ...newDoctor, endTime: value })}
+                  value={newDoctor.endTime}
+                  disableClock
+                  className="w-full px-4 py-2 border border-black rounded"
+                />
+              </div>
+
+              {/* Experience Years */}
               <div>
                 <label className="block mb-1 font-semibold">Experience Years</label>
                 <input
                   type="number"
+                  placeholder="10 Year"
                   value={newDoctor.experienceYears}
                   onChange={(e) => setNewDoctor({ ...newDoctor, experienceYears: e.target.value })}
                   className="w-full px-4 py-2 border border-black rounded"
                 />
               </div>
 
+              {/* Gender */}
               <div>
                 <label className="block mb-1 font-semibold">Gender</label>
                 <select
@@ -276,12 +314,13 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
                   onChange={(e) => setNewDoctor({ ...newDoctor, gender: e.target.value })}
                   className="w-full px-4 py-2 border border-black rounded"
                 >
-                  <option value="">Select Gender</option>
+                  <option value="">Select gender</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
                 </select>
               </div>
 
+              {/* Hospital */}
               <div>
                 <label className="block mb-1 font-semibold">Hospital</label>
                 <select
@@ -289,13 +328,14 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
                   onChange={(e) => setNewDoctor({ ...newDoctor, hospitalId: e.target.value })}
                   className="w-full px-4 py-2 border border-black rounded"
                 >
-                  <option value="">Select Hospital</option>
+                  <option value="">Select hospital</option>
                   {hospitals.map((h) => (
                     <option key={h.clinic_id} value={h.clinic_id}>{h.name}</option>
                   ))}
                 </select>
               </div>
 
+              {/* Status */}
               <div>
                 <label className="block mb-1 font-semibold">Status</label>
                 <select
@@ -308,7 +348,8 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
                 </select>
               </div>
 
-              <div>
+              {/* Profile Image */}
+              <div className="md:col-span-2">
                 <label className="block mb-1 font-semibold">Profile Image</label>
                 <input
                   type="file"
@@ -318,7 +359,7 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
               </div>
 
               {/* Buttons */}
-              <div className="flex justify-end space-x-3 pt-2">
+              <div className="flex justify-end space-x-3 pt-2 h-auto">
                 <button
                   type="button"
                   onClick={() => {
@@ -338,6 +379,7 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
                 </button>
               </div>
             </form>
+
           </div>
         </div>
       )}
