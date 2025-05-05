@@ -11,6 +11,7 @@ import UsersPage from "./pages/UsersPage";
 // import SalesPage from "./pages/SalesPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import SettingsPage from "./pages/SettingsPage";
+import PaymentsPage from "./pages/PaymentsPage";
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
 				<Route path='/Doctors' element={<DoctorsPage />} />
 				<Route path='/users' element={<UsersPage />} />
 				<Route path='/Appointment' element={<AppointmentsPage />} />
+				<Route path='/Payments' element={<PaymentsPage />} />
 				{/* <Route path='/sales' element={<SalesPage />} /> */}
 				<Route path='/analytics' element={<AnalyticsPage />} />
 				<Route path='/settings' element={<SettingsPage />} />

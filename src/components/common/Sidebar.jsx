@@ -15,7 +15,7 @@ const SIDEBAR_ITEMS = [
 	{ name: "Doctor", icon: Stethoscope, color: "#10B981", href: "/Doctors" },
 	{ name: "Appointment", icon: Calendar, color: "#F59E0B", href: "/Appointment" },
 	{ name: "Hospitals", icon: Hospital, color: "#3B82F6", href: "/hospitals" },
-	{ name: "Payment ", icon: CreditCard, color: "#3B82F6", href: "/analytics" },
+	{ name: "Payment ", icon: CreditCard, color: "#3B82F6", href: "/Payments" },
 	{ name: "Settings", icon: Settings, color: "#6EE7B7", href: "/settings" },
 ];
 

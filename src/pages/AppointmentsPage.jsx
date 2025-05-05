@@ -43,6 +43,7 @@ const AppointmentsPage = () => {
           <StatCard name="Total Appointments" icon={Calendar} value={totalAppointments} color="#6366F1" />
           <StatCard name="Upcoming" icon={CheckCircle} value={upcomingAppointments} color="#10B981" />
           <StatCard name="Past" icon={XCircle} value={pastAppointments} color="#F59E0B" />
+          
         </motion.div>
 
         <AppointmentTable refreshAppointments={fetchAppointments} appointments={appointments} />
