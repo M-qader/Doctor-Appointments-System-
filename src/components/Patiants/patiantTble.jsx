@@ -16,6 +16,7 @@ export default function PatientTable({ patients, refreshPatients }) {
     phone: '',
     gender: '',
     dob: '',
+    balance:''
   });
 
   const handleEdit = (patient) => {
@@ -27,6 +28,7 @@ export default function PatientTable({ patients, refreshPatients }) {
       phone: patient.phone,
       gender: patient.gender,
       dob: patient.dob,
+      balance: patient.balance
     });
     setIsModalOpen(true);
   };
@@ -101,7 +103,8 @@ export default function PatientTable({ patients, refreshPatients }) {
       (p.gender?.toLowerCase() || '').includes(term) ||
       (String(p.phone || '')).toLowerCase().includes(term) ||
       (p.dob?.toLowerCase() || '').includes(term) ||
-      (p.createdAt?.toLowerCase() || '').includes(term)
+      (p.createdAt?.toLowerCase() || '').includes(term) ||
+      (p.balance?.toLowerCase() || '').includes(term)
 
     );
   });
@@ -144,14 +147,11 @@ export default function PatientTable({ patients, refreshPatients }) {
           <table className="min-w-full divide-y divide-gray-400 border border-gray-300">
             <thead className="bg-gray-300">
               <tr>
-                {['ID', 'Full Name', 'Email', 'Phone', 'Gender', 'DOB', 'Created At', 'Actions'].map((head) => (
-                  <th
-                    key={head}
-                    className="px-6 py-3 text-left text-sm font-medium text-black uppercase tracking-wider"
-                  >
-                    {head}
-                  </th>
-                ))}
+              {['ID', 'Full Name', 'Phone', 'Gender', 'DOB', 'Age', 'balance', 'Created At', 'Actions'].map((head) => (
+              <th key={head} className="px-6 py-3 text-left text-sm font-medium text-black uppercase tracking-wider">
+              {head}
+              </th>
+              ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-300">
@@ -165,10 +165,11 @@ export default function PatientTable({ patients, refreshPatients }) {
                 >
                   <td className="px-6 py-4 text-sm text-black">{p.patientId}</td>
                   <td className="px-6 py-4 text-sm text-black">{p.fullName}</td>
-                  <td className="px-6 py-4 text-sm text-black">{p.email}</td>
                   <td className="px-6 py-4 text-sm text-black">{p.phone}</td>
                   <td className="px-6 py-4 text-sm text-black">{p.gender}</td>
                   <td className="px-6 py-4 text-sm text-black">{p.dob}</td>
+                  <td className="px-6 py-4 text-sm text-black">{p.age != null ? `${p.age} Yers` : 'N/A'}</td>
+                  <td className="px-6 py-4 text-sm text-black">$ {p.balance}</td>
                   <td className="px-6 py-4 text-sm text-black">{p.createdAt}</td>
                   <td className="px-6 py-4 text-sm text-black">
                     <button onClick={() => handleEdit(p)} className="text-blue-600 hover:text-blue-800 mr-2">

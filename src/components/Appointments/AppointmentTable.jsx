@@ -147,7 +147,7 @@ export default function AppointmentTable({ appointments, refreshAppointments }) 
   });
 
   return (
-    <motion.div className="p-6 space-y-6 min-h-screen bg-white">
+    <motion.div className="p-6 space-y-6 min-h-screen w-[1280px] mx-auto bg-white">
       <div className="bg-gray-100 shadow-2xl rounded-xl p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-black">Appointments</h2>

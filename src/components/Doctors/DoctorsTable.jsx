@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Edit, Trash2, Search } from 'lucide-react';
 import Swal from 'sweetalert2';
-import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import 'react-clock/dist/Clock.css';
 
@@ -16,12 +15,12 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
     email: '',
     phone: '',
     specialization: '',
-    startTime: '',
-    endTime: '',
+    timeslot: '', // beddel halkii startTime iyo endTime
     experienceYears: '',
     gender: '',
     status: true,
     hospitalId: '',
+    consultationFee: '',
     image: null,
   });
   const [hospitals, setHospitals] = useState([]);
@@ -44,18 +43,19 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
     setEditMode(true);
     setSelectedDoctorId(doctor.doctorId);
     setNewDoctor({
-      fullName: doctor.fullName,
-      email: doctor.email,
-      phone: doctor.phone,
-      specialization: doctor.specialization,
-      startTime,
-      endTime,
-      experienceYears: doctor.experienceYears,
-      gender: doctor.gender,
-      status: doctor.status,
-      hospitalId: doctor.hospital?.clinic_id || '',
-      image: null,
-    });
+        fullName: doctor.fullName,
+        email: doctor.email,
+        phone: doctor.phone,
+        specialization: doctor.specialization,
+        timeslot: doctor.timeslot || '',
+        experienceYears: doctor.experienceYears,
+        gender: doctor.gender,
+        status: doctor.status,
+        hospitalId: doctor.hospital?.clinic_id || '',
+        consultationFee: doctor.consultationFee || '',
+        image: null,
+      });
+      
     setIsModalOpen(true);
   };
 
@@ -78,7 +78,7 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const timeslot = `${newDoctor.startTime} - ${newDoctor.endTime}`;
+    const timeslot = newDoctor.timeslot;
 
     const formData = new FormData();
     formData.append('fullName', newDoctor.fullName);
@@ -89,6 +89,7 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
     formData.append('experienceYears', newDoctor.experienceYears);
     formData.append('gender', newDoctor.gender);
     formData.append('hospital_id', newDoctor.hospitalId);
+    formData.append('consultationFee', newDoctor.consultationFee);
     formData.append('status', newDoctor.status ? 'true' : 'false');
     if (newDoctor.image) {
       formData.append('file', newDoctor.image);
@@ -134,7 +135,7 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
   });
 
   return (
-    <motion.div className="p-6 space-y-6 min-h-screen bg-white"
+    <motion.div className="p-6 space-y-6 min-h-screen bg-white w-[1280px] mx-auto"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
@@ -171,15 +172,15 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto w-full">
           <table className="min-w-full divide-y divide-gray-400 border border-gray-300">
             <thead className="bg-gray-300">
               <tr>
-                {['ID','Image', 'Full Name', 'Specialization', 'Timeslot', 'Status', 'Created At', 'Actions'].map((head) => (
-                  <th key={head} className="px-6 py-3 text-left text-sm font-medium text-black uppercase tracking-wider">
-                    {head}
-                  </th>
-                ))}
+              {['ID','Image', 'Full Name', 'Specialization', 'Timeslot', 'Fee', 'Status', 'Created At', 'Actions'].map((head) => (
+               <th key={head} className="px-6 py-3 text-left text-sm font-medium text-black uppercase tracking-wider">
+                  {head}
+               </th>
+               ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-300">
@@ -196,6 +197,7 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
                   <td className="px-6 py-4 text-sm text-black">{d.fullName}</td>
                   <td className="px-6 py-4 text-sm text-black">{d.specialization}</td>
                   <td className="px-6 py-4 text-sm text-black">{d.timeslot}</td>
+                  <td className="px-6 py-4 text-sm text-black">${d.consultationFee?.toFixed(2)}</td>
                   <td className="px-6 py-4 text-sm">
                     <span className={d.status ? "text-green-600 font-semibold" : 
                       "text-red-600 font-semibold"}>{d.status ? 'Active' : 'Inactive'}
@@ -224,6 +226,7 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
           <div className="bg-white p-6 rounded-lg shadow-xl w-[600px] max-h-[100vh] overflow-y-auto text-black">
             <h2 className="text-xl mb-4">{editMode ? 'Edit Doctor' : 'Add New Doctor'}</h2>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
               {/* Full Name */}
               <div>
                 <label className="block mb-1 font-semibold">Full Name</label>
@@ -263,35 +266,28 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
               {/* Specialization */}
               <div>
                 <label className="block mb-1 font-semibold">Specialization</label>
-                <input
-                  type="text"
-                  placeholder="Cudurada Guud"
+                <select
                   value={newDoctor.specialization}
                   onChange={(e) => setNewDoctor({ ...newDoctor, specialization: e.target.value })}
                   className="w-full px-4 py-2 border border-black rounded"
-                />
-              </div>
-
-              {/* Start Time */}
-              <div>
-                <label className="block mb-1 font-semibold">Start Time</label>
-                <TimePicker
-                  onChange={(value) => setNewDoctor({ ...newDoctor, startTime: value })}
-                  value={newDoctor.startTime}
-                  disableClock
-                  className="w-full px-4 py-2 border border-black rounded"
-                />
-              </div>
-
-              {/* End Time */}
-              <div>
-                <label className="block mb-1 font-semibold">End Time</label>
-                <TimePicker
-                  onChange={(value) => setNewDoctor({ ...newDoctor, endTime: value })}
-                  value={newDoctor.endTime}
-                  disableClock
-                  className="w-full px-4 py-2 border border-black rounded"
-                />
+                >
+                  <option value="">Select Specialization</option>
+                  <option value="General Practitioner">General Practitioner</option>
+                  <option value="Cardiologist">Cardiologist</option>
+                  <option value="Dermatologist">Dermatologist</option>
+                  <option value="Pediatrician">Pediatrician</option>
+                  <option value="Gynecologist">Gynecologist</option>
+                  <option value="Orthopedic Surgeon">Orthopedic Surgeon</option>
+                  <option value="Neurologist">Neurologist</option>
+                  <option value="Psychiatrist">Psychiatrist</option>
+                  <option value="Ophthalmologist">Ophthalmologist</option>
+                  <option value="ENT Specialist">ENT Specialist</option>
+                  <option value="Oncologist">Oncologist</option>
+                  <option value="Dentist">Dentist</option>
+                  <option value="Endocrinologist">Endocrinologist</option>
+                  <option value="Gastroenterologist">Gastroenterologist</option>
+                  <option value="Urologist">Urologist</option>
+                </select>
               </div>
 
               {/* Experience Years */}
@@ -304,6 +300,37 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
                   onChange={(e) => setNewDoctor({ ...newDoctor, experienceYears: e.target.value })}
                   className="w-full px-4 py-2 border border-black rounded"
                 />
+              </div>
+
+               {/* Consultation Fee */}
+               <div>
+                <label className="block mb-1 font-semibold">Consultation Fee ($)</label>
+                <input
+                type="number"
+                step="0.01"
+                min="5"
+                max="500"
+                required
+                placeholder="e.g. 25.00"
+                value={newDoctor.consultationFee}
+                onChange={(e) => setNewDoctor({ ...newDoctor, consultationFee: e.target.value })}
+                className="w-full px-4 py-2 border border-black rounded"
+                />
+              </div>
+
+              {/* Timeslot */}
+              <div className="md:col-span-2">
+                <label className="block mb-1 font-semibold">Timeslot</label>
+                <select
+                    value={newDoctor.timeslot}
+                    onChange={(e) => setNewDoctor({ ...newDoctor, timeslot: e.target.value })}
+                    className="w-full px-4 py-2 border border-black rounded"
+                >
+                    <option value="">Select shift</option>
+                    <option value="Morning Shift">Morning Shift</option>
+                    <option value="Evening Shift">Evening Shift</option>
+                    <option value="Night Shift">Night Shift</option>
+                </select>
               </div>
 
               {/* Gender */}
@@ -349,12 +376,12 @@ export default function DoctorTable({ doctors, refreshDoctors }) {
               </div>
 
               {/* Profile Image */}
-              <div className="md:col-span-2">
+              <div>
                 <label className="block mb-1 font-semibold">Profile Image</label>
                 <input
                   type="file"
                   onChange={(e) => setNewDoctor({ ...newDoctor, image: e.target.files[0] })}
-                  className="w-full"
+                  className="w-full px-4 py-2 border border-black rounded"
                 />
               </div>
 

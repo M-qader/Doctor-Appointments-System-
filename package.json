@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "framer-motion": "^11.3.19",
+    "framer-motion": "^11.18.2",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.417.0",
@@ -20,6 +20,7 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.25.1",
     "react-time-picker": "^7.0.0",
+    "react-toastify": "^11.0.5",
     "recharts": "^2.12.7",
     "sweetalert2": "^11.19.1"
   },

@@ -16,6 +16,7 @@ const SIDEBAR_ITEMS = [
 	{ name: "Appointment", icon: Calendar, color: "#F59E0B", href: "/Appointment" },
 	{ name: "Hospitals", icon: Hospital, color: "#3B82F6", href: "/hospitals" },
 	{ name: "Payment ", icon: CreditCard, color: "#3B82F6", href: "/Payments" },
+	{ name: "Employees ", icon: CreditCard, color: "#3B82F6", href: "/employee" },
 	{ name: "Settings", icon: Settings, color: "#6EE7B7", href: "/settings" },
 ];
 
